@@ -1,0 +1,3 @@
+You need to install the OpenCL Installable Client Driver (ICD) on the host:
+
+sudo apt install opencl-amdgpu-pro-icd
