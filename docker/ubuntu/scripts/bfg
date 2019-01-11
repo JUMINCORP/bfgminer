@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo this. is. bfg.
+
+# We need to add /opt/amdgpu-pro/lib/x86_64-linux-gnu to the linker configuration
+# We added the path with a /etc/ld.so.conf.d config file, and we mounted /opt/amdgpu-pro
+# in the Docker command line, now run ldconfig.
+ldconfig
+
+GENERATE_TO=${EQB_ADDRESS:-"tq1qhc6eardg9ae8q8k86988hg9vl9c6e3lukwm7qm"}
+GRAFFITI=${COINBASE_SIG:-"BFG inside Docker"}
+NODE=${NODE_ADDRESS:-"http://localhost:18331"}
+
+echo this. is. before.
+
+/bfg/bfgminer -u equibit -p equibit --generate-to "${GENERATE_TO}" --coinbase-sig "${GRAFFITI}" -D -o "${NODE}" --no-default-config -S auto

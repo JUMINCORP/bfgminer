@@ -14,7 +14,8 @@ FROM ubuntu:18.04 as builder
 		ln -s /opt/amdgpu-pro/bin/clinfo /usr/bin && \
 		ln -s /opt/amdgpu-pro/lib/x86_64-linux-gnu/* /usr/lib/x86_64-linux-gnu/ && \
 		ldconfig && \
-		find /opt/amdgpu-pro
+		find /opt/amdgpu-pro && \
+		ldconfig -p | grep libamd
 
 
 	RUN \
@@ -41,11 +42,16 @@ FROM ubuntu:18.04 as runner
 	WORKDIR /bfg
 
 	RUN find /opt
-	COPY --from=builder /opt/amdgpu-pro/bin/ /usr/bin/
-	COPY --from=builder /opt/amdgpu-pro/lib/x86_64-linux-gnu/ /usr/lib/
-	COPY --from=builder /etc/OpenCL/ /etc/OpenCL/
+	#COPY --from=builder /opt/amdgpu-pro/bin/ /usr/bin/
+	#COPY --from=builder /opt/amdgpu-pro/lib/x86_64-linux-gnu/ /usr/lib/
+	#COPY --from=builder /etc/OpenCL/ /etc/OpenCL/
 
 	RUN find /usr/lib
+
+	COPY amd/10-amdgpu-pro.conf /etc/ld.so.conf.d/
+	RUN ldconfig
+
+	COPY scripts/bfg .
 
 	COPY --from=builder /bfg/bfgminer .
 	COPY --from=builder /bfg/libbase58/.libs ./libbase58/.libs
@@ -54,6 +60,6 @@ FROM ubuntu:18.04 as runner
 
 	RUN \
 		apt-get update && \
-		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 libdrm-amdgpu1 strace gdb
+		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 libdrm-amdgpu1 strace gdb clinfo
 
 # vim: ts=4:sw=4
