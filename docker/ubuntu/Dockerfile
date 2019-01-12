@@ -1,5 +1,6 @@
 FROM ubuntu:18.04 as builder
 
+{% if target == "amd" %}
 	RUN mkdir /amd
 	COPY amdgpu-pro*.tar.xz /amd
 
@@ -16,7 +17,7 @@ FROM ubuntu:18.04 as builder
 		ldconfig && \
 		find /opt/amdgpu-pro && \
 		ldconfig -p | grep libamd
-
+{% endif %}
 
 	RUN \
 		apt-get update && \
@@ -31,7 +32,7 @@ FROM ubuntu:18.04 as builder
 		git clone https://github.com/Equibit/bfgminer.git /bfg && \
 		cd /bfg && \
 		./autogen.sh && \
-		./configure --without-curses --enable-keccak --disable-sha256d --enable-opencl --disable-oth && \
+		./configure --without-curses --enable-keccak --disable-sha256d {% if target == "amd" %} --enable-opencl {% endif %} {% if target == "cpu" %} --enable-cpumining {% endif %} --disable-other-drivers && \
 		make V=0
 
 
@@ -41,15 +42,10 @@ FROM ubuntu:18.04 as runner
 	RUN mkdir /bfg
 	WORKDIR /bfg
 
-	RUN find /opt
-	#COPY --from=builder /opt/amdgpu-pro/bin/ /usr/bin/
-	#COPY --from=builder /opt/amdgpu-pro/lib/x86_64-linux-gnu/ /usr/lib/
-	#COPY --from=builder /etc/OpenCL/ /etc/OpenCL/
-
-	RUN find /usr/lib
-
+{% if target == "amd" %}
 	COPY amd/10-amdgpu-pro.conf /etc/ld.so.conf.d/
 	RUN ldconfig
+{% endif %}
 
 	COPY scripts/bfg .
 
@@ -60,6 +56,6 @@ FROM ubuntu:18.04 as runner
 
 	RUN \
 		apt-get update && \
-		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 libdrm-amdgpu1 strace gdb clinfo
+		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 {% if target == "amd" %} libdrm-amdgpu1 {% endif %} strace gdb clinfo
 
 # vim: ts=4:sw=4
