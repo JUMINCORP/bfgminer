@@ -58,4 +58,6 @@ FROM ubuntu:18.04 as runner
 		apt-get update && \
 		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 {% if target == "amd" %} libdrm-amdgpu1 {% endif %} strace gdb clinfo
 
+	ENTRYPOINT ["/bfg/bfg"]
+
 # vim: ts=4:sw=4
