@@ -28,16 +28,36 @@ FROM ubuntu:18.04 as builder
 		libmicrohttpd-dev libhidapi-dev
 
 	RUN \
-		apt-get install -y git && \
-		git clone https://github.com/Equibit/bfgminer.git /bfg && \
-		cd /bfg && \
-		./autogen.sh && \
-		./configure --without-curses --enable-keccak --disable-sha256d {% if target == "amd" %} --enable-opencl {% endif %} {% if target == "cpu" %} --enable-cpumining {% endif %} --disable-other-drivers && \
-		make V=0
+		apt-get install -y devscripts debhelper libsensors4-dev yasm wget quilt
 
+	RUN \
+		apt-get install -y git && \
+		git clone https://github.com/Equibit/bfgminer.git /bfg
+		# && \
+		#cd /bfg && \
+		#./autogen.sh && \
+		#./configure --without-curses --enable-keccak --disable-sha256d {% if target == "amd" %} --enable-opencl {% endif %} {% if target == "cpu" %} --enable-cpumining {% endif %} --disable-other-drivers && \
+		#make V=0
+
+	COPY debian-*.patch /bfg/debian/
+	RUN \
+		cd /bfg/debian && \
+		patch control < debian-control.patch && \
+		patch rules < debian-rules.patch && \
+		cd /bfg && \
+		DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b && \
+		echo RETURN_CODE :: $? && \
+		find / -name "bfgminer*" && \
+		ldd /bfg/bfgminer
 
 
 FROM ubuntu:18.04 as runner
+
+	
+{% if target == "amd" %}
+	RUN mkdir /deb
+	COPY --from=builder /*.deb /deb
+{% endif %}
 
 	RUN mkdir /bfg
 	WORKDIR /bfg
@@ -52,11 +72,12 @@ FROM ubuntu:18.04 as runner
 	COPY --from=builder /bfg/bfgminer .
 	COPY --from=builder /bfg/libbase58/.libs ./libbase58/.libs
 	COPY --from=builder /bfg/libblkmaker/.libs ./libblkmaker/.libs
-	COPY --from=builder /bfg/opencl ./opencl
+
+COPY --from=builder /bfg/opencl ./opencl
 
 	RUN \
 		apt-get update && \
-		apt-get install -y libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 {% if target == "amd" %} libdrm-amdgpu1 {% endif %} strace gdb clinfo
+		apt-get install -y libjansson-dev libsensors4-dev libcurl4-gnutls-dev libmicrohttpd-dev libevent-pthreads-2.1-6 {% if target == "amd" %} libdrm-amdgpu1 {% endif %} strace gdb clinfo
 
 	ENTRYPOINT ["/bfg/bfg"]
 

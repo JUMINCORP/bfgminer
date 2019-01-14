@@ -1,0 +1,8 @@
+8d7
+< 
+10,11c9,10
+< 	NOSUBMODULES=1 ./autogen.sh
+< 	dh_auto_configure -- --enable-other-drivers --enable-keccak --enable-scrypt --with-system-libblkmaker --disable-knc
+---
+> 	./autogen.sh
+> 	./configure --prefix=/usr --without-curses --enable-keccak --disable-sha256d --enable-opencl --enable-cpumining --disable-other-drivers

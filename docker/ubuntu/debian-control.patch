@@ -1,0 +1,11 @@
+--- control	2019-01-14 11:39:08.591997031 -0500
++++ control.patched	2019-01-14 11:43:25.230500368 -0500
+@@ -4,8 +4,6 @@
+ Maintainer: Luke Dashjr <luke_bfgminer@dashjr.org>
+ Standards-Version: 5.5.0
+ Build-Depends: build-essential, debhelper, autoconf, automake, libtool
+- ,libbase58-dev
+- ,libblkmaker-0.1-dev
+  ,libcurl4-gnutls-dev | libcurl-ssl-dev
+  ,libevent-dev
+  ,libjansson-dev
