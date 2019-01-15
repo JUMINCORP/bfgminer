@@ -6,17 +6,20 @@
 ---
 > 	./autogen.sh
 > 	./configure --prefix=/usr --program-transform-name='s/bfg/eqb/' --docdir=/usr/share/doc/eqbminer --enable-static --disable-shared --without-curses --enable-keccak --disable-sha256d --enable-opencl --enable-cpumining --disable-other-drivers
-14a14,26
-> 	rm -rf $(CURDIR)/debian/bfgminer/usr/include
-> 	rm -rf $(CURDIR)/debian/bfgminer/usr/lib
-> 	rm -rf $(CURDIR)/debian/bfgminer/usr/share/doc/libbase58
+14c13,26
+< 	$(MAKE) DESTDIR=$(CURDIR)/debian/bfgminer install
+---
+> 	$(MAKE) DESTDIR=$(CURDIR)/debian/eqbminer install
+> 	rm -rf $(CURDIR)/debian/eqbminer/usr/include
+> 	rm -rf $(CURDIR)/debian/eqbminer/usr/lib
+> 	rm -rf $(CURDIR)/debian/eqbminer/usr/share/doc/libbase58
 > 
-> override_dh_installdocs:
-> 	dh_installdocs
-> 	for f in './debian/bfgminer/usr/share/doc/bfgminer/*'; do mv $${f} ./debian/bfgminer/usr/share/doc/eqbminer/; done
-> 	rm -rf debian/bfgminer/usr/share/doc/bfgminer
+> #override_dh_installdocs:
+> 	#dh_installdocs
+> 	#for f in './debian/bfgminer/usr/share/doc/bfgminer/*'; do mv $${f} ./debian/bfgminer/usr/share/doc/eqbminer/; done
+> 	#rm -rf debian/bfgminer/usr/share/doc/bfgminer
 > 
-> override_dh_installchangelogs:
-> 	dh_installchangelogs
-> 	for f in './debian/bfgminer/usr/share/doc/bfgminer/*'; do mv $${f} ./debian/bfgminer/usr/share/doc/eqbminer/; done
-> 	rm -rf debian/bfgminer/usr/share/doc/bfgminer
+> #override_dh_installchangelogs:
+> 	#dh_installchangelogs
+> 	#for f in './debian/bfgminer/usr/share/doc/bfgminer/*'; do mv $${f} ./debian/bfgminer/usr/share/doc/eqbminer/; done
+> 	#rm -rf debian/bfgminer/usr/share/doc/bfgminer

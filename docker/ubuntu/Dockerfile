@@ -47,6 +47,7 @@ FROM ubuntu:18.04 as builder
 		cd /bfg/debian && \
 		patch control < debian-control.patch && \
 		patch rules < debian-rules.patch && \
+		patch changelog < debian-changelog.patch && \
 		cd /bfg && \
 		DEB_BUILD_OPTIONS=nocheck PACKAGE=eqbminer debuild -us -uc -b
 
