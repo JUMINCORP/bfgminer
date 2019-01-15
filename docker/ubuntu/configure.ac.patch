@@ -1,0 +1,4 @@
+27c27
+< AC_INIT([bfgminer], [v_ver], [luke-jr+bfgminer@utopios.org])
+---
+> AC_INIT([eqbminer], [v_ver], [luke-jr+bfgminer@utopios.org], [eqbminer])

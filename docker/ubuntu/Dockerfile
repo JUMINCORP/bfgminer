@@ -37,13 +37,18 @@ FROM ubuntu:18.04 as builder
 		apt-get install -y git && \
 		git clone https://github.com/Equibit/bfgminer.git /bfg
 
+	COPY configure.ac.patch /bfg/
+	RUN \
+		cd /bfg && \
+		patch configure.ac < configure.ac.patch
+
 	COPY debian-*.patch /bfg/debian/
 	RUN \
 		cd /bfg/debian && \
 		patch control < debian-control.patch && \
 		patch rules < debian-rules.patch && \
 		cd /bfg && \
-		DEB_BUILD_OPTIONS=nocheck debuild -us -uc -b
+		DEB_BUILD_OPTIONS=nocheck PACKAGE=eqbminer debuild -us -uc -b
 
 
 FROM ubuntu:18.04 as runner
@@ -51,6 +56,7 @@ FROM ubuntu:18.04 as runner
 
 	RUN mkdir /deb
 	COPY --from=builder /*.deb /deb
+	COPY --from=builder /bfg/Makefile /deb
 
 {% if target == "amd" %}
 	COPY amd/10-amdgpu-pro.conf /etc/ld.so.conf.d/

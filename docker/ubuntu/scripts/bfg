@@ -14,4 +14,4 @@ echo GENERATE TO: ${GENERATE_TO}
 echo GRAFFITI: ${GRAFFITI}
 echo NODE: ${NODE}
 
-bfgminer -u equibit -p equibit --generate-to "${GENERATE_TO}" --coinbase-sig "${GRAFFITI}" -D -o "${NODE}" --no-default-config -S auto
+eqbminer -u equibit -p equibit --generate-to "${GENERATE_TO}" --coinbase-sig "${GRAFFITI}" -D -o "${NODE}" --no-default-config -S auto
